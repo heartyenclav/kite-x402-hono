@@ -42,7 +42,10 @@ export class TrafficShaper {
     };
   }
 
-  public async schedule<T>(fn: () => Promise<T>, priority?: number): Promise<T> {
+  public async schedule<T>(
+    fn: () => Promise<T>,
+    priority?: number,
+  ): Promise<T> {
     const prio = priority ?? this.config.defaultPriority;
 
     if (this.activeCount < this.config.maxConcurrency) {
@@ -56,7 +59,9 @@ export class TrafficShaper {
     }
 
     if (this.queue.length >= this.config.maxQueueDepth) {
-      throw new Error(`TrafficShaper queue overflow (depth: ${this.queue.length})`);
+      throw new Error(
+        `TrafficShaper queue overflow (depth: ${this.queue.length})`,
+      );
     }
 
     return new Promise<T>((resolve, reject) => {
@@ -82,7 +87,11 @@ export class TrafficShaper {
           const idx = this.queue.indexOf(item);
           if (idx !== -1) {
             this.queue.splice(idx, 1);
-            reject(new Error(`TrafficShaper request queued timeout (${this.config.queueTimeoutMs}ms)`));
+            reject(
+              new Error(
+                `TrafficShaper request queued timeout (${this.config.queueTimeoutMs}ms)`,
+              ),
+            );
           }
         }, this.config.queueTimeoutMs);
       }
@@ -90,7 +99,10 @@ export class TrafficShaper {
   }
 
   private async processNext() {
-    if (this.activeCount >= this.config.maxConcurrency || this.queue.length === 0) {
+    if (
+      this.activeCount >= this.config.maxConcurrency ||
+      this.queue.length === 0
+    ) {
       return;
     }
 

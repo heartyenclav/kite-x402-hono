@@ -1,5 +1,5 @@
 import { describe, it, expect } from "bun:test";
-import { TrafficShaper } from "../src/traffic-shaper";
+import { TrafficShaper } from "../src/traffic-shaper.js";
 
 describe("TrafficShaper", () => {
   it("executes immediately when concurrency capacity is available", async () => {
@@ -14,7 +14,9 @@ describe("TrafficShaper", () => {
     const order: number[] = [];
 
     // Occupy slot
-    const task1 = shaper.schedule(() => new Promise((resolve) => setTimeout(resolve, 50)));
+    const task1 = shaper.schedule(
+      () => new Promise((resolve) => setTimeout(resolve, 50)),
+    );
 
     // Queue low priority
     shaper.schedule(async () => {
@@ -38,6 +40,8 @@ describe("TrafficShaper", () => {
     shaper.schedule(() => new Promise(() => {})); // occupies slot
     shaper.schedule(() => new Promise(() => {})); // occupies queue 1
 
-    expect(shaper.schedule(() => Promise.resolve())).rejects.toThrow("overflow");
+    expect(shaper.schedule(() => Promise.resolve())).rejects.toThrow(
+      "overflow",
+    );
   });
 });
